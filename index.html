@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIRAP – Portal Delagente (Demo QA)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-950:#173f1b; --green-900:#215527; --green-800:#2a6630; --green-600:#3f8a3a;
+  --lime:#d3d83f; --lime-soft:#eef0b8;
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f4f6f3; --line:#d9ddd6;
+  --text:#1d221d; --muted:#5c665c; --error:#b3261e; --error-bg:#fdecea;
+  --ok:#22672b; --ok-bg:#e3f1e2; --warn:#8a5a00; --warn-bg:#fff3d6; --info:#2b4f8a; --info-bg:#e6eefb;
+  --font:"Roboto",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121612; --surface:#1b211b; --surface-2:#232a23; --line:#333c33; --text:#e8ece6; --muted:#a7b1a5;
+    --error:#ffb4ab; --error-bg:#3d1714; --ok:#9fd99f; --ok-bg:#1d3a20; --warn:#ffd37a; --warn-bg:#3a2d10; --info:#a9c4ff; --info-bg:#1b2840;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121612; --surface:#1b211b; --surface-2:#232a23; --line:#333c33; --text:#e8ece6; --muted:#a7b1a5;
+  --error:#ffb4ab; --error-bg:#3d1714; --ok:#9fd99f; --ok-bg:#1d3a20; --warn:#ffd37a; --warn-bg:#3a2d10; --info:#a9c4ff; --info-bg:#1b2840;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5}
+button,input,select{font:inherit}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+
+/* ---------- Wordmark ---------- */
+.brand{display:inline-flex;flex-direction:column;align-items:center;color:#fff;line-height:1;user-select:none}
+.brand b{font-style:italic;font-weight:900;font-size:1.35rem;letter-spacing:-.01em;border-bottom:2px solid rgba(255,255,255,.85);padding-bottom:3px}
+.brand span{font-size:1.15rem;letter-spacing:-.04em;margin-top:4px;display:flex;align-items:center;gap:5px}
+.brand span::before{content:"";width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 30%,rgba(255,255,255,.55) 31% 60%,transparent 61%)}
+
+/* ---------- Login ---------- */
+#screenLogin{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);background:var(--bg)}
+.hero{position:relative;padding:clamp(28px,6vw,72px);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:28px;
+  background:
+   repeating-linear-gradient(115deg,rgba(255,255,255,.035) 0 2px,transparent 2px 46px),
+   linear-gradient(135deg,#23592a 0%,#3d7d2f 45%,#8db53a 85%,#b9c94a 100%)}
+.hero h1{margin:0;font-size:clamp(2rem,4.2vw,3.4rem);font-weight:700;line-height:1.08;max-width:14ch}
+.hero p{margin:0;font-size:clamp(1.05rem,1.6vw,1.35rem);max-width:34ch}
+.hero .brand{align-self:flex-start}
+.hero hr{border:0;border-top:1px solid rgba(255,255,255,.7);width:min(100%,520px);margin:8px 0 0}
+.hero .social{font-weight:500}
+.login-side{display:flex;align-items:center;justify-content:center;padding:32px 20px;background:var(--bg)}
+.login-card{width:min(100%,480px);background:var(--surface);border-radius:22px;padding:44px 36px;box-shadow:0 18px 50px rgba(23,63,27,.18);border:1px solid var(--line)}
+.login-card h2{margin:0 0 18px;font-size:1.9rem;font-weight:700}
+.login-card .lead{color:var(--muted);margin:0 0 30px}
+.row-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;border-radius:10px;padding:12px 22px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:10px;min-height:44px}
+.btn-lime{background:var(--lime);color:#1d3a10;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.btn-dark{background:var(--green-900);color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.btn-dark:hover{background:var(--green-950)} .btn-lime:hover{filter:brightness(.96)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--green-800);padding:8px 4px;min-height:auto}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-weight:500;font-size:.92rem}
+.input{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:6px;padding:12px 14px;min-height:46px;width:100%}
+.input:focus{border-color:var(--green-600);outline:none;box-shadow:0 0 0 3px rgba(63,138,58,.25)}
+.input[aria-invalid="true"]{border-color:var(--error)}
+.field-error{color:var(--error);font-size:.85rem;min-height:1.1em}
+.alert{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:.93rem}
+.alert-error{background:var(--error-bg);color:var(--error)}
+.alert-ok{background:var(--ok-bg);color:var(--ok)}
+.alert-info{background:var(--info-bg);color:var(--info)}
+.demo-hint{margin-top:22px;font-size:.82rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:14px}
+.demo-hint code{background:var(--surface-2);padding:1px 6px;border-radius:4px}
+
+/* ---------- App shell ---------- */
+#screenApp{display:grid;grid-template-columns:280px minmax(0,1fr);min-height:100vh;background:linear-gradient(to right,var(--green-900) 280px,var(--bg) 280px)}
+.sidebar{background:var(--green-900);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-head{display:flex;align-items:center;gap:18px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.18);min-height:76px}
+.icon-btn{background:transparent;border:0;color:inherit;cursor:pointer;padding:8px;border-radius:8px;display:inline-flex}
+.icon-btn:hover{background:rgba(127,127,127,.15)}
+.nav{list-style:none;margin:0;padding:10px 12px 20px}
+.nav button{width:100%;display:flex;align-items:center;gap:14px;background:transparent;border:0;color:#fff;padding:14px 16px;border-radius:6px;cursor:pointer;font-size:.88rem;font-weight:500;text-align:left}
+.nav button:hover{background:rgba(255,255,255,.08)}
+.nav button[aria-current="page"]{background:var(--lime);color:#1d3a10}
+.nav .chev{margin-left:auto;opacity:.8}
+.crumbs{font-size:.8rem;padding:14px 24px 4px;opacity:.9}
+.sub-title{display:flex;align-items:center;gap:12px;padding:6px 14px 12px;font-weight:500}
+.sub-title button{color:#fff}
+.topbar{height:76px;display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:0 28px;border-bottom:1px solid var(--line);box-shadow:0 2px 4px rgba(0,0,0,.06);background:var(--surface);position:sticky;top:0;z-index:5}
+.topbar .menu-mobile{margin-right:auto;display:none;color:var(--green-800)}
+.topbar .icon-btn{color:var(--green-800)}
+.user-chip{position:relative;margin-left:8px;padding-left:18px;border-left:2px solid var(--green-800)}
+.user-chip>button{display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;color:var(--text);font-weight:700;font-size:.85rem}
+.avatar{width:22px;height:22px;border-radius:50%;background:var(--lime);display:inline-grid;place-items:center;color:#1d3a10}
+.user-menu{position:absolute;right:0;top:calc(100% + 10px);background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);min-width:200px;padding:6px}
+.user-menu button{width:100%;text-align:left;background:none;border:0;padding:10px 12px;border-radius:6px;cursor:pointer;color:var(--text)}
+.user-menu button:hover{background:var(--surface-2)}
+main{padding:28px clamp(16px,3vw,36px) 48px;min-width:0}
+.greet{font-size:1.3rem;font-weight:500;margin:0}
+.date{color:var(--muted);text-align:right;font-size:.9rem;margin:6px 0 18px}
+.banner{border-radius:16px;min-height:360px;padding:clamp(24px,5vw,56px);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;
+  background:radial-gradient(circle at 85% 20%,rgba(211,216,63,.55),transparent 45%),linear-gradient(135deg,#1f5a24,#3d7d2f 60%,#7aa83a)}
+.banner h2{margin:0;font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.15;max-width:22ch}
+.banner p{margin:0;max-width:52ch;opacity:.95}
+.shortcuts{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- Consulta ---------- */
+h1.page{font-size:1.75rem;margin:8px 0 22px;font-weight:700}
+.seg{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.pill{border-radius:999px;padding:10px 20px;font-weight:700;font-size:.9rem;border:1.5px solid var(--green-800);background:transparent;color:var(--green-800);cursor:pointer}
+.pill[aria-selected="true"]{background:var(--green-800);color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18)}
+.search-box{border:1px solid var(--line);border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.08);padding:24px;background:var(--surface)}
+.search-grid{display:grid;grid-template-columns:minmax(180px,2fr) minmax(150px,1fr) minmax(150px,1fr) auto;gap:16px;align-items:start}
+.search-grid .btn{margin-top:0}
+select.input{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:40px}
+.empty{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:40px;padding:56px 16px;text-align:center;color:var(--muted)}
+.result{margin-top:28px}
+.person{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--green-800);padding-bottom:16px}
+.person h2{margin:0;font-size:1.45rem}
+.person .doc{color:var(--muted)}
+.badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.82rem;font-weight:700}
+.b-ok{background:var(--ok-bg);color:var(--ok)} .b-warn{background:var(--warn-bg);color:var(--warn)} .b-err{background:var(--error-bg);color:var(--error)} .b-info{background:var(--info-bg);color:var(--info)}
+dl.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 28px;margin:18px 0 26px}
+dl.facts div{padding:10px 0;border-bottom:1px solid var(--line)}
+dt{font-size:.8rem;color:var(--muted)} dd{margin:2px 0 0;font-weight:500}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{background:none;border:0;padding:12px 18px;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--green-800);border-bottom-color:var(--green-800)}
+.tabpanel{padding-top:18px}
+.summary{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:14px}
+.summary div{font-size:.9rem;color:var(--muted)} .summary strong{display:block;font-size:1.5rem;color:var(--text)}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--surface-2);font-weight:700;font-size:.85rem}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+.list-results{margin-top:24px}
+.list-results button{all:unset;cursor:pointer;color:var(--green-800);font-weight:700;text-decoration:underline}
+.list-results button:focus-visible{outline:3px solid var(--lime)}
+.placeholder{padding:60px 20px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--green-950);color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:50;max-width:90vw}
+
+@media (max-width:980px){.search-grid{grid-template-columns:1fr 1fr}.search-grid .btn{grid-column:span 2;justify-content:center}}
+@media (max-width:860px){
+  #screenLogin{grid-template-columns:1fr}
+  .hero{min-height:auto}
+  #screenApp{grid-template-columns:1fr;background:var(--bg)}
+  .sidebar{position:fixed;inset:0 auto 0 0;width:min(85vw,300px);z-index:20;transform:translateX(-100%);transition:transform .2s;padding-top:env(safe-area-inset-top,0px)}
+  .sidebar.open{transform:none}
+  .topbar{top:env(safe-area-inset-top,0px)}
+  .topbar .menu-mobile{display:inline-flex}
+  .user-chip>button span.name{display:none}
+}
+@media (max-width:520px){.search-grid{grid-template-columns:1fr}.search-grid .btn{grid-column:auto}.login-card{padding:32px 22px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="screenLogin" data-testid="screen-login">
+  <section class="hero" aria-label="Bienvenida">
+    <div class="brand" aria-label="Comfenalco Valle delagente"><b>Comfenalco Valle</b><span>delagente</span></div>
+    <h1>¡Bienvenido al portal Delagente!</h1>
+    <p>Somos Delagente porque trabajamos con amor para transformar la vida de las familias vallecaucanas.</p>
+    <hr>
+    <p class="social">Ambiente de demostración para pruebas automatizadas con UiPath Test Cloud.</p>
+  </section>
+
+  <section class="login-side">
+    <div class="login-card">
+      <!-- Paso 1: bienvenida -->
+      <div id="loginWelcome">
+        <h2>Iniciar sesión</h2>
+        <p class="lead">Crea una cuenta o inicia sesión para acceder al portal.</p>
+        <div id="logoutMsg" class="alert alert-ok" role="status" hidden>Cerraste sesión correctamente.</div>
+        <div class="row-btns">
+          <button class="btn btn-lime" id="btnRegistrarse" data-testid="btn-registrarse" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            Registrarse</button>
+          <button class="btn btn-dark" id="btnIniciarSesion" data-testid="btn-iniciar-sesion" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M14 4h5v16h-5M3 12h11M10 8l4 4-4 4"/></svg>
+            Iniciar Sesión</button>
+        </div>
+      </div>
+
+      <!-- Paso 2: formulario -->
+      <form id="loginForm" novalidate hidden>
+        <h2>Iniciar sesión</h2>
+        <p class="lead">Ingresa con tu usuario corporativo de SIRAP.</p>
+        <div id="loginError" class="alert alert-error" role="alert" data-testid="login-error" hidden></div>
+        <div class="field">
+          <label for="txtUsuario">Usuario</label>
+          <input class="input" id="txtUsuario" name="usuario" data-testid="txt-usuario" autocomplete="username" aria-describedby="errUsuario">
+          <span class="field-error" id="errUsuario" data-testid="err-usuario"></span>
+        </div>
+        <div class="field">
+          <label for="txtPassword">Contraseña</label>
+          <input class="input" id="txtPassword" name="password" type="password" data-testid="txt-password" autocomplete="current-password" aria-describedby="errPassword">
+          <span class="field-error" id="errPassword" data-testid="err-password"></span>
+        </div>
+        <div class="row-btns" style="justify-content:space-between;align-items:center">
+          <button type="button" class="btn btn-ghost" id="btnVolverLogin" data-testid="btn-volver">Volver</button>
+          <button type="submit" class="btn btn-dark" id="btnIngresar" data-testid="btn-ingresar">Ingresar</button>
+        </div>
+        <p class="demo-hint">Usuario de demostración: <code>qa.registro</code> · Contraseña: <code>Demo2026*</code></p>
+      </form>
+    </div>
+  </section>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="screenApp" data-testid="screen-app" hidden>
+  <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+    <div class="sb-head">
+      <button class="icon-btn" id="btnCerrarMenu" aria-label="Contraer menú" type="button">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button>
+      <div class="brand"><b style="font-size:1.05rem">Comfenalco Valle</b><span style="font-size:.95rem">delagente</span></div>
+    </div>
+
+    <nav id="navMain">
+      <ul class="nav">
+        <li><button data-view="home" id="menuHome" data-testid="menu-home" aria-current="page">🏠 Home</button></li>
+        <li><button data-view="placeholder" data-name="Comunicados">📣 Comunicados <span class="chev">›</span></button></li>
+        <li><button data-view="placeholder" data-name="Consola De Proceso">🗂️ Consola De Proceso</button></li>
+        <li><button data-view="placeholder" data-name="Reportes">📄 Reportes <span class="chev">›</span></button></li>
+        <li><button id="menuConsultaCaja" data-testid="menu-consulta-caja" data-sub="consulta">👥 Consulta Caja <span class="chev">›</span></button></li>
+        <li><button data-view="placeholder" data-name="Procesos Masivos">☰ Procesos Masivos <span class="chev">›</span></button></li>
+        <li><button data-view="placeholder" data-name="Aportes">💵 Aportes <span class="chev">›</span></button></li>
+        <li><button data-view="placeholder" data-name="Cruces externos">🔁 Cruces externos <span class="chev">›</span></button></li>
+        <li><button data-view="placeholder" data-name="Radicacion">🗃️ Radicacion <span class="chev">›</span></button></li>
+        <li><button data-view="placeholder" data-name="Servicios Caja">🧰 Servicios Caja <span class="chev">›</span></button></li>
+      </ul>
+    </nav>
+
+    <nav id="navConsulta" hidden>
+      <div class="crumbs">Home / Consulta Caja</div>
+      <div class="sub-title"><button class="icon-btn" id="btnVolverMenu" data-testid="btn-volver-menu" aria-label="Volver al menú principal" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M20 12H5m6-6-6 6 6 6"/></svg></button> Consulta Caja</div>
+      <ul class="nav">
+        <li><button data-view="consulta" id="menuConsultaAfiliado" data-testid="menu-consulta-afiliado">Consulta Caja Afiliado</button></li>
+        <li><button data-view="placeholder" data-name="Consulta Caja Empresa">Consulta Caja Empresa</button></li>
+        <li><button data-view="placeholder" data-name="Consulta remanentes">Consulta remanentes</button></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <div>
+    <header class="topbar">
+      <button class="icon-btn menu-mobile" id="btnAbrirMenu" aria-label="Abrir menú" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button>
+      <button class="icon-btn" aria-label="Buscar" type="button" data-toast="La búsqueda global no está disponible en la demo."><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.2"/></svg></button>
+      <button class="icon-btn" aria-label="Configuración" type="button" data-toast="La configuración no está disponible en la demo."><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.4-2.5 1a7 7 0 0 0-1.7-1L15 3h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.5-1-2 3.4L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.4 2.5-1a7 7 0 0 0 1.7 1L11 21h4l.4-2.6a7 7 0 0 0 1.7-1l2.5 1 2-3.4zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
+      <button class="icon-btn" aria-label="Notificaciones" type="button" data-toast="No tienes notificaciones nuevas."><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zm4 3h4"/></svg></button>
+      <div class="user-chip">
+        <button id="btnUsuario" data-testid="btn-usuario" aria-haspopup="menu" aria-expanded="false" type="button">
+          <span class="avatar" aria-hidden="true">●</span><span class="name" id="lblUsuario" data-testid="lbl-usuario"></span> ▾</button>
+        <div class="user-menu" id="userMenu" role="menu" hidden>
+          <button role="menuitem" id="btnCerrarSesion" data-testid="btn-cerrar-sesion" type="button">Cerrar sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HOME -->
+      <section id="viewHome" data-testid="view-home">
+        <p class="greet" id="lblBienvenida" data-testid="lbl-bienvenida"></p>
+        <p class="date" id="lblFecha"></p>
+        <div class="banner">
+          <h2>Registro y aportes al día para cada familia afiliada</h2>
+          <p>Consulta afiliados, revisa sus aportes legalizados y el estado de su afiliación desde un solo lugar.</p>
+          <div class="shortcuts"><button class="btn btn-lime" id="btnAtajoConsulta" data-testid="btn-atajo-consulta" type="button">Consultar un afiliado</button></div>
+        </div>
+      </section>
+
+      <!-- CONSULTA AFILIADO -->
+      <section id="viewConsulta" data-testid="view-consulta" hidden>
+        <h1 class="page">Consulta de afiliados</h1>
+        <div class="seg" role="tablist" aria-label="Tipo de consulta">
+          <button class="pill" role="tab" id="tabDocumento" data-testid="tab-documento" aria-selected="true" aria-controls="formDocumento">CONSULTAR POR DOCUMENTO</button>
+          <button class="pill" role="tab" id="tabNombre" data-testid="tab-nombre" aria-selected="false" aria-controls="formNombre">CONSULTAR POR NOMBRE</button>
+        </div>
+
+        <form id="formDocumento" class="search-box" novalidate>
+          <div class="search-grid">
+            <div class="field" style="margin:0">
+              <label class="sr-only" for="selTipoId">Tipo de identificación</label>
+              <select class="input" id="selTipoId" data-testid="sel-tipo-id" aria-describedby="errTipoId">
+                <option value="">Tipo de identificación</option>
+                <option value="CC">CC - Cédula de ciudadanía</option>
+                <option value="TI">TI - Tarjeta de identidad</option>
+                <option value="CE">CE - Cédula de extranjería</option>
+                <option value="PT">PT - Permiso por protección temporal</option>
+                <option value="PA">PA - Pasaporte</option>
+                <option value="RC">RC - Registro civil</option>
+              </select>
+              <span class="field-error" id="errTipoId" data-testid="err-tipo-id"></span>
+            </div>
+            <div class="field" style="margin:0">
+              <label class="sr-only" for="txtNumeroId">Número de identificación</label>
+              <input class="input" id="txtNumeroId" data-testid="txt-numero-id" placeholder="Número de identificación" inputmode="numeric" aria-describedby="errNumeroId">
+              <span class="field-error" id="errNumeroId" data-testid="err-numero-id"></span>
+            </div>
+            <div class="field" style="margin:0">
+              <label class="sr-only" for="txtNumeroAfiliacion">Número de afiliación</label>
+              <input class="input" id="txtNumeroAfiliacion" data-testid="txt-numero-afiliacion" placeholder="Número de afiliación" inputmode="numeric" aria-describedby="errNumeroAfiliacion">
+              <span class="field-error" id="errNumeroAfiliacion" data-testid="err-numero-afiliacion"></span>
+            </div>
+            <button class="btn btn-dark" id="btnConsultar" data-testid="btn-consultar" type="submit">Consultar</button>
+          </div>
+        </form>
+
+        <form id="formNombre" class="search-box" novalidate hidden>
+          <div class="search-grid" style="grid-template-columns:minmax(0,1fr) auto">
+            <div class="field" style="margin:0">
+              <label class="sr-only" for="txtNombre">Nombre o apellido</label>
+              <input class="input" id="txtNombre" data-testid="txt-nombre" placeholder="Nombre o apellido del afiliado" aria-describedby="errNombre">
+              <span class="field-error" id="errNombre" data-testid="err-nombre"></span>
+            </div>
+            <button class="btn btn-dark" id="btnConsultarNombre" data-testid="btn-consultar-nombre" type="submit">Consultar</button>
+          </div>
+        </form>
+
+        <div id="resultArea" aria-live="polite">
+          <p class="empty" id="lblEmpty" data-testid="lbl-empty">Realiza una consulta para iniciar</p>
+        </div>
+      </section>
+
+      <!-- PLACEHOLDER -->
+      <section id="viewPlaceholder" hidden>
+        <h1 class="page" id="lblPlaceholderTitle"></h1>
+        <p class="placeholder">Este módulo no hace parte de la demo. Usa <strong>Consulta Caja &gt; Consulta Caja Afiliado</strong> para probar el flujo.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+  "use strict";
+  var USERS = { "qa.registro": { pass: "Demo2026*", nombre: "USUARIO QA REGISTRO Y APORTES" } };
+  var MAX_INTENTOS = 3;
+  var intentos = {}; var bloqueados = {};
+
+  var AFILIADOS = [
+    { tipo:"CC", numero:"1010101010", afiliacion:"7600123401", nombre:"LAURA MARCELA RÍOS CANO", estado:"Afiliado",
+      tipoAfiliado:"Dependiente", empresa:"Distribuidora Andina S.A.S. (NIT 900123456-1)", ingreso:"2024-06-01", retiro:"", categoria:"B", sede:"Cali",
+      aportes:[["2024-03","9100001001",52000,"Revisado","Sin afiliación"],["2024-04","9100001002",52000,"Revisado","Sin afiliación"],["2024-05","9100001003",52000,"Revisado","Sin afiliación"],
+               ["2024-06","9100001004",52000,"Revisado","Revisado"],["2024-07","9100001005",52000,"Revisado","Revisado"],["2024-08","9100001006",52000,"Revisado","Revisado"],["2024-09","9100001007",52000,"Revisado","Revisado"]],
+      novedades:[["2024-06-01","ING","Ingreso","Legalización por afiliación"]],
+      familia:[["TI","1122334455","SAMUEL RÍOS CANO","Hijo","8"]] },
+    { tipo:"CC", numero:"2020202020", afiliacion:"7600123402", nombre:"JORGE ANDRÉS SALAZAR MUÑOZ", estado:"Retirado",
+      tipoAfiliado:"Dependiente", empresa:"Servicios Integrales del Pacífico S.A.S. (NIT 901234567-8)", ingreso:"2023-02-01", retiro:"2024-10-18", categoria:"A", sede:"Buenaventura",
+      aportes:[["2024-07","9100002001",48000,"Revisado","Revisado"],["2024-08","9100002002",48000,"Revisado","Revisado"],["2024-09","9100002003",48000,"Revisado","Revisado"],["2024-10","9100002004",28800,"Revisado","Revisado"]],
+      novedades:[["2023-02-01","ING","Ingreso","Formulario 1002000020043572"],["2024-03-04","VSP","Variación salarial","PILA 2024-03"],["2024-10-18","RET","Retiro","PILA 2024-10, 18 días cotizados"]],
+      familia:[] },
+    { tipo:"CE", numero:"3030303", afiliacion:"7600123403", nombre:"VALENTINA ORTIZ GUERRERO", estado:"Pre-afiliado",
+      tipoAfiliado:"Dependiente", empresa:"Confecciones El Valle S.A.S. (NIT 900555444-2)", ingreso:"2025-01-15", retiro:"", categoria:"A", sede:"Palmira",
+      aportes:[["2025-01","9100003001",36000,"Inconsistente","Inconsistente"],["2025-02","9100003002",36000,"Inconsistente","Inconsistente"],["2025-03","9100003003",36000,"Inconsistente","Inconsistente"]],
+      novedades:[], familia:[] },
+    { tipo:"PT", numero:"4040404", afiliacion:"7600123404", nombre:"CARLOS EDUARDO MINA LUCUMÍ", estado:"Afiliado",
+      tipoAfiliado:"Independiente", empresa:"No aplica (aporta como independiente)", ingreso:"2025-01-01", retiro:"", categoria:"B", sede:"Cali",
+      aportes:[["2025-01","9100004001",40000,"Revisado","Revisado"],["2025-02","9100004002",40000,"Revisado","Revisado"],["2025-03","9100004003",40000,"Revisado","Revisado"],["2025-04","9100004004",40000,"Revisado","Revisado"]],
+      novedades:[["2025-01-01","ING","Ingreso","Planilla tipo I"]], familia:[["RC","1199887766","MATÍAS MINA ROJAS","Hijo","3"]] },
+    { tipo:"CC", numero:"5050505050", afiliacion:"7600123405", nombre:"ANDREA PATRICIA RINCÓN VÉLEZ", estado:"Afiliado",
+      tipoAfiliado:"Pensionado", empresa:"No aplica (aporta como pensionado)", ingreso:"2023-08-01", retiro:"", categoria:"C", sede:"Tuluá",
+      aportes:[["2025-02","9100005001",30000,"Revisado","Revisado"],["2025-03","9100005002",30000,"Revisado","Revisado"]],
+      novedades:[["2023-08-01","ING","Ingreso","Planilla tipo IP"]], familia:[] }
+  ];
+
+  var $ = function(id){ return document.getElementById(id); };
+  var esc = function(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); };
+  var money = function(n){ return "$ " + n.toLocaleString("es-CO"); };
+  var toastTimer;
+  function toast(msg){ var t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.hidden=true;},3200); }
+  function setErr(input, errEl, msg){ errEl.textContent = msg||""; if(input){ input.setAttribute("aria-invalid", msg ? "true":"false"); } }
+
+  // ---------- LOGIN ----------
+  $("btnIniciarSesion").addEventListener("click", function(){
+    $("loginWelcome").hidden = true; $("loginForm").hidden = false; $("logoutMsg").hidden = true; $("txtUsuario").focus();
+  });
+  $("btnRegistrarse").addEventListener("click", function(){ toast("El registro de cuentas no está disponible en el ambiente de demostración."); });
+  $("btnVolverLogin").addEventListener("click", resetLogin);
+
+  function resetLogin(){
+    $("loginForm").reset(); $("loginForm").hidden = true; $("loginWelcome").hidden = false; $("loginError").hidden = true;
+    setErr($("txtUsuario"),$("errUsuario")); setErr($("txtPassword"),$("errPassword"));
+  }
+
+  $("loginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var u = $("txtUsuario").value.trim().toLowerCase(), p = $("txtPassword").value;
+    var ok = true; $("loginError").hidden = true;
+    setErr($("txtUsuario"),$("errUsuario"), u ? "" : "Ingresa tu usuario.");
+    setErr($("txtPassword"),$("errPassword"), p ? "" : "Ingresa tu contraseña.");
+    if(!u || !p){ ok=false; }
+    if(!ok){ (u ? $("txtPassword") : $("txtUsuario")).focus(); return; }
+
+    if(bloqueados[u]){ showLoginError("Tu usuario está bloqueado por "+MAX_INTENTOS+" intentos fallidos. Comunícate con la Mesa de Servicio para desbloquearlo."); return; }
+    var user = USERS[u];
+    if(user && user.pass === p){
+      intentos[u]=0; enterApp(user); return;
+    }
+    intentos[u] = (intentos[u]||0) + 1;
+    var rest = MAX_INTENTOS - intentos[u];
+    if(rest <= 0){ bloqueados[u]=true; showLoginError("Tu usuario está bloqueado por "+MAX_INTENTOS+" intentos fallidos. Comunícate con la Mesa de Servicio para desbloquearlo."); }
+    else { showLoginError("Usuario o contraseña incorrectos. Te queda"+(rest===1?"":"n")+" "+rest+" intento"+(rest===1?"":"s")+"."); }
+    $("txtPassword").value=""; $("txtPassword").focus();
+  });
+  function showLoginError(msg){ var el=$("loginError"); el.textContent=msg; el.hidden=false; }
+
+  function enterApp(user){
+    $("screenLogin").hidden = true; $("screenApp").hidden = false;
+    $("lblUsuario").textContent = user.nombre;
+    $("lblBienvenida").textContent = "Hola " + user.nombre + ", bienvenido a SIRAP";
+    var d = new Date(), meses=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    $("lblFecha").textContent = String(d.getDate()).padStart(2,"0")+" de "+meses[d.getMonth()]+" "+d.getFullYear();
+    showMainNav(); showView("home"); resetLogin();
+  }
+
+  // ---------- NAV ----------
+  function setCurrent(btn){ document.querySelectorAll(".nav button").forEach(function(b){ b.removeAttribute("aria-current"); }); if(btn) btn.setAttribute("aria-current","page"); }
+  function showMainNav(){ $("navMain").hidden=false; $("navConsulta").hidden=true; setCurrent($("menuHome")); }
+  function showView(v, name){
+    $("viewHome").hidden = v!=="home"; $("viewConsulta").hidden = v!=="consulta"; $("viewPlaceholder").hidden = v!=="placeholder";
+    if(v==="placeholder"){ $("lblPlaceholderTitle").textContent = name; }
+    $("sidebar").classList.remove("open"); window.scrollTo(0,0);
+  }
+  document.querySelectorAll(".nav button").forEach(function(b){
+    b.addEventListener("click", function(){
+      if(b.dataset.sub==="consulta"){ $("navMain").hidden=true; $("navConsulta").hidden=false; $("menuConsultaAfiliado").focus(); return; }
+      setCurrent(b); showView(b.dataset.view, b.dataset.name);
+    });
+  });
+  $("btnVolverMenu").addEventListener("click", function(){ $("navConsulta").hidden=true; $("navMain").hidden=false; $("menuConsultaCaja").focus(); });
+  $("btnAtajoConsulta").addEventListener("click", function(){ $("navMain").hidden=true; $("navConsulta").hidden=false; setCurrent($("menuConsultaAfiliado")); showView("consulta"); });
+  $("btnAbrirMenu").addEventListener("click", function(){ $("sidebar").classList.add("open"); });
+  $("btnCerrarMenu").addEventListener("click", function(){ $("sidebar").classList.remove("open"); });
+  document.querySelectorAll("[data-toast]").forEach(function(b){ b.addEventListener("click", function(){ toast(b.dataset.toast); }); });
+
+  // ---------- USER MENU ----------
+  $("btnUsuario").addEventListener("click", function(){ var m=$("userMenu"); m.hidden=!m.hidden; $("btnUsuario").setAttribute("aria-expanded", String(!m.hidden)); });
+  document.addEventListener("click", function(e){ if(!e.target.closest(".user-chip")){ $("userMenu").hidden=true; $("btnUsuario").setAttribute("aria-expanded","false"); } });
+  $("btnCerrarSesion").addEventListener("click", function(){
+    $("userMenu").hidden=true; $("screenApp").hidden=true; $("screenLogin").hidden=false;
+    clearConsulta(); $("logoutMsg").hidden=false;
+  });
+
+  // ---------- CONSULTA ----------
+  function selectTab(which){
+    var doc = which==="doc";
+    $("tabDocumento").setAttribute("aria-selected", String(doc)); $("tabNombre").setAttribute("aria-selected", String(!doc));
+    $("formDocumento").hidden = !doc; $("formNombre").hidden = doc; clearResults();
+  }
+  $("tabDocumento").addEventListener("click", function(){ selectTab("doc"); });
+  $("tabNombre").addEventListener("click", function(){ selectTab("nom"); });
+
+  function clearResults(){ $("resultArea").innerHTML = '<p class="empty" id="lblEmpty" data-testid="lbl-empty">Realiza una consulta para iniciar</p>'; }
+  function clearConsulta(){ $("formDocumento").reset(); $("formNombre").reset(); ["errTipoId","errNumeroId","errNumeroAfiliacion","errNombre"].forEach(function(id){ $(id).textContent=""; }); selectTab("doc"); }
+
+  $("formDocumento").addEventListener("submit", function(e){
+    e.preventDefault();
+    var tipo=$("selTipoId").value, num=$("txtNumeroId").value.trim(), afi=$("txtNumeroAfiliacion").value.trim();
+    setErr($("selTipoId"),$("errTipoId")); setErr($("txtNumeroId"),$("errNumeroId")); setErr($("txtNumeroAfiliacion"),$("errNumeroAfiliacion"));
+    var valid = true;
+    if(!afi){
+      if(!tipo){ setErr($("selTipoId"),$("errTipoId"),"Selecciona el tipo de identificación."); valid=false; }
+      if(!num){ setErr($("txtNumeroId"),$("errNumeroId"),"Ingresa el número de identificación o el número de afiliación."); valid=false; }
+    }
+    if(num && !/^\d{3,15}$/.test(num)){ setErr($("txtNumeroId"),$("errNumeroId"),"Solo se admiten dígitos (entre 3 y 15)."); valid=false; }
+    if(afi && !/^\d{10}$/.test(afi)){ setErr($("txtNumeroAfiliacion"),$("errNumeroAfiliacion"),"El número de afiliación tiene 10 dígitos."); valid=false; }
+    if(!valid){ clearResults(); return; }
+
+    var found = AFILIADOS.filter(function(a){
+      if(afi) return a.afiliacion===afi;
+      return a.tipo===tipo && a.numero===num;
+    })[0];
+    if(!found){
+      var who = afi ? "con número de afiliación "+afi : "con "+tipo+" "+num;
+      $("resultArea").innerHTML = '<div class="empty" data-testid="lbl-no-encontrado" id="lblNoEncontrado">No encontramos un afiliado '+esc(who)+'. Verifica el tipo y el número de identificación.</div>';
+      return;
+    }
+    renderAfiliado(found);
+  });
+
+  $("formNombre").addEventListener("submit", function(e){
+    e.preventDefault();
+    var q=$("txtNombre").value.trim();
+    setErr($("txtNombre"),$("errNombre"));
+    if(q.length<3){ setErr($("txtNombre"),$("errNombre"),"Ingresa al menos 3 caracteres del nombre o apellido."); clearResults(); return; }
+    var norm=function(s){ return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase(); };
+    var list = AFILIADOS.filter(function(a){ return norm(a.nombre).indexOf(norm(q))>=0; });
+    if(!list.length){ $("resultArea").innerHTML='<div class="empty" id="lblNoEncontrado" data-testid="lbl-no-encontrado">No encontramos afiliados que coincidan con "'+esc(q)+'". Revisa la ortografía o consulta por documento.</div>'; return; }
+    var rows = list.map(function(a,i){
+      return '<tr><td>'+a.tipo+' '+a.numero+'</td><td><button type="button" data-idx="'+AFILIADOS.indexOf(a)+'" data-testid="lnk-afiliado-'+i+'">'+esc(a.nombre)+'</button></td><td>'+a.tipoAfiliado+'</td><td>'+badgeEstado(a.estado)+'</td></tr>';
+    }).join("");
+    $("resultArea").innerHTML = '<div class="list-results"><p id="lblCantidadResultados" data-testid="lbl-cantidad-resultados">'+list.length+' afiliado'+(list.length>1?'s':'')+' encontrado'+(list.length>1?'s':'')+'</p><div class="table-wrap"><table id="tblResultadosNombre" data-testid="tbl-resultados-nombre"><thead><tr><th>Documento</th><th>Nombre</th><th>Tipo de afiliado</th><th>Estado</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    $("resultArea").querySelectorAll("button[data-idx]").forEach(function(b){ b.addEventListener("click", function(){ renderAfiliado(AFILIADOS[+b.dataset.idx]); }); });
+  });
+
+  function badgeEstado(s){
+    var c = {"Afiliado":"b-ok","Retirado":"b-info","Pre-afiliado":"b-warn"}[s] || "b-info";
+    return '<span class="badge '+c+'" data-testid="badge-estado">'+esc(s)+'</span>';
+  }
+  function badgeAporte(s){
+    var c = {"Revisado":"b-ok","Sin afiliación":"b-info","Inconsistente":"b-err"}[s] || "b-info";
+    return '<span class="badge '+c+'">'+esc(s)+'</span>';
+  }
+
+  function renderAfiliado(a){
+    var legal = a.aportes.filter(function(x){ return x[3]!=="Inconsistente"; }).length;
+    var incons = a.aportes.length - legal;
+    var facts = [["Número de afiliación",a.afiliacion,"lbl-num-afiliacion"],["Tipo de afiliado",a.tipoAfiliado,"lbl-tipo-afiliado"],["Empresa",a.empresa,"lbl-empresa"],
+                 ["Fecha de ingreso",a.ingreso,"lbl-fecha-ingreso"],["Fecha de retiro",a.retiro||"—","lbl-fecha-retiro"],["Categoría",a.categoria,"lbl-categoria"],["Sede",a.sede,"lbl-sede"]];
+    var aportesRows = a.aportes.map(function(x){ return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td class="num">'+money(x[2])+'</td><td>'+badgeAporte(x[3])+'</td><td>'+badgeAporte(x[4])+'</td></tr>'; }).join("");
+    var novRows = a.novedades.length ? a.novedades.map(function(x){ return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+esc(x[2])+'</td><td>'+esc(x[3])+'</td></tr>'; }).join("") : '<tr><td colspan="4">El afiliado no tiene novedades registradas.</td></tr>';
+    var famRows = a.familia.length ? a.familia.map(function(x){ return '<tr><td>'+x[0]+' '+x[1]+'</td><td>'+esc(x[2])+'</td><td>'+x[3]+'</td><td>'+x[4]+'</td></tr>'; }).join("") : '<tr><td colspan="4">El afiliado no tiene personas a cargo registradas.</td></tr>';
+
+    $("resultArea").innerHTML =
+      '<article class="result" id="pnlResultado" data-testid="pnl-resultado">'+
+        '<div class="person"><div><h2 id="lblNombreAfiliado" data-testid="lbl-nombre-afiliado">'+esc(a.nombre)+'</h2><div class="doc" id="lblDocumento" data-testid="lbl-documento">'+a.tipo+' '+a.numero+'</div></div>'+
+        '<div id="lblEstadoAfiliacion">'+badgeEstado(a.estado)+'</div></div>'+
+        '<dl class="facts">'+facts.map(function(f){ return '<div><dt>'+f[0]+'</dt><dd id="'+f[2]+'" data-testid="'+f[2]+'">'+esc(f[1])+'</dd></div>'; }).join("")+'</dl>'+
+        '<div class="tabs" role="tablist">'+
+          '<button class="tab" role="tab" id="tabAportes" data-testid="tab-aportes" aria-selected="true" data-p="pAportes">Aportes</button>'+
+          '<button class="tab" role="tab" id="tabNovedades" data-testid="tab-novedades" aria-selected="false" data-p="pNovedades">Novedades</button>'+
+          '<button class="tab" role="tab" id="tabFamilia" data-testid="tab-familia" aria-selected="false" data-p="pFamilia">Grupo familiar</button>'+
+        '</div>'+
+        '<div class="tabpanel" id="pAportes" role="tabpanel">'+
+          '<div class="summary"><div><strong id="lblTotalPeriodos" data-testid="lbl-total-periodos">'+a.aportes.length+'</strong>periodos con aporte</div>'+
+          '<div><strong id="lblLegalizados" data-testid="lbl-legalizados">'+legal+'</strong>legalizados</div>'+
+          '<div><strong id="lblInconsistentes" data-testid="lbl-inconsistentes">'+incons+'</strong>inconsistentes</div></div>'+
+          '<div class="table-wrap"><table id="tblAportes" data-testid="tbl-aportes"><thead><tr><th>Periodo</th><th>Planilla</th><th>Valor</th><th>Estado aporte</th><th>Estado detalle aporte pagado</th></tr></thead><tbody>'+aportesRows+'</tbody></table></div>'+
+        '</div>'+
+        '<div class="tabpanel" id="pNovedades" role="tabpanel" hidden><div class="table-wrap"><table id="tblNovedades" data-testid="tbl-novedades"><thead><tr><th>Fecha</th><th>Código</th><th>Novedad</th><th>Origen</th></tr></thead><tbody>'+novRows+'</tbody></table></div></div>'+
+        '<div class="tabpanel" id="pFamilia" role="tabpanel" hidden><div class="table-wrap"><table id="tblFamilia" data-testid="tbl-familia"><thead><tr><th>Documento</th><th>Nombre</th><th>Parentesco</th><th>Edad</th></tr></thead><tbody>'+famRows+'</tbody></table></div></div>'+
+      '</article>';
+    var tabs = $("resultArea").querySelectorAll(".tab");
+    tabs.forEach(function(t){ t.addEventListener("click", function(){
+      tabs.forEach(function(o){ o.setAttribute("aria-selected","false"); $(o.dataset.p).hidden=true; });
+      t.setAttribute("aria-selected","true"); $(t.dataset.p).hidden=false;
+    }); });
+  }
+})();
+</script>
+</body>
+</html>
